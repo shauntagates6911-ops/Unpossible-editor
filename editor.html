@@ -1,0 +1,2418 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Unpossible - Motion Blocks Sandbox 🥭</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #0f172a;
+      color: #f8fafc;
+      margin: 0;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    h1 {
+      color: #38bdf8;
+      margin-bottom: 5px;
+    }
+    p {
+      color: #94a3b8;
+      margin-top: 0;
+    }
+    #stage-container {
+      position: relative;
+      border: 4px solid #0284c7;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+      background-color: #1e293b;
+    }
+    canvas {
+      display: block;
+    }
+    .controls {
+      margin-top: 20px;
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    button {
+      background: linear-gradient(135deg, #0284c7, #0369a1);
+      color: white;
+      border: none;
+      padding: 12px 20px;
+      border-radius: 8px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: transform 0.1s, background 0.2s;
+      box-shadow: 0 4px 10px rgba(2, 132, 199, 0.3);
+    }
+    button:hover {
+      transform: translateY(-2px);
+      background: linear-gradient(135deg, #38bdf8, #0284c7);
+    }
+    button:active {
+      transform: translateY(0);
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Unpossible Motion Blocks 🥭</h1>
+  <p>Testing custom block logic for 3D/Advanced Motion engine</p>
+
+  <div id="stage-container">
+    <canvas id="stage" width="480" height="360"></canvas>
+  </div>
+
+  <div class="controls">
+    <button onclick="moveSteps(20)">Move 20 Steps</button>
+    <button onclick="turnRight(15)">Turn Right 15°</button>
+    <button onclick="glideTo(0, 0, 1)">Glide to Center (1s)</button>
+    <button onclick="bounceOffEdge()">Edge Bounce Check</button>
+    <button onclick="resetPosition()">Reset Mascot</button>
+  </div>
+
+  <script>
+    const canvas = document.getElementById('stage');
+    const ctx = canvas.getContext('2d');
+
+    // Sprite State (Unpossible Mascot)
+    let sprite = {
+      x: 240,
+      y: 180,
+      size: 40,
+      angle: 0,
+      color: '#00d2ff'
+    };
+
+    function draw() {
+      // Clear stage background
+      ctx.fillStyle = '#1e293b';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      // Draw grid lines
+      ctx.strokeStyle = '#334155';
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(240, 0); ctx.lineTo(240, 360);
+      ctx.moveTo(0, 180); ctx.lineTo(480, 180);
+      ctx.stroke();
+
+      // Render Mascot Sprite
+      ctx.save();
+      ctx.translate(sprite.x, sprite.y);
+      ctx.rotate((sprite.angle * Math.PI) / 180);
+
+      // Body / Headphone Mascot Placeholder
+      ctx.fillStyle = sprite.color;
+      ctx.beginPath();
+      ctx.arc(0, 0, sprite.size / 2, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Direction Indicator
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(0, -3, sprite.size / 2 + 5, 6);
+
+      ctx.restore();
+    }
+
+    // --- Custom Motion Block Functions ---
+
+    function moveSteps(steps) {
+      const rad = (sprite.angle * Math.PI) / 180;
+      sprite.x += Math.cos(rad) * steps;
+      sprite.y += Math.sin(rad) * steps;
+      draw();
+    }
+
+    function turnRight(degrees) {
+      sprite.angle = (sprite.angle + degrees) % 360;
+      draw();
+    }
+
+    function glideTo(targetX, targetY, durationSeconds) {
+      // Convert Scratch coordinates (0,0 center) to Canvas coordinates
+      const canvasTargetX = targetX + 240;
+      const canvasTargetY = 180 - targetY;
+
+      const startX = sprite.x;
+      const startY = sprite.y;
+      const startTime = performance.now();
+      const durationMs = durationSeconds * 1000;
+
+      function animate(time) {
+        let elapsed = time - startTime;
+        let progress = Math.min(elapsed / durationMs, 1);
+
+        sprite.x = startX + (canvasTargetX - startX) * progress;
+        sprite.y = startY + (canvasTargetY - startY) * progress;
+
+        draw();
+
+        if (progress < 1) {
+          requestAnimationFrame(animate);
+        }
+      }
+
+      requestAnimationFrame(animate);
+    }
+
+    function bounceOffEdge() {
+      const radius = sprite.size / 2;
+      if (sprite.x + radius >= canvas.width || sprite.x - radius <= 0) {
+        sprite.angle = 180 - sprite.angle;
+      }
+      if (sprite.y + radius >= canvas.height || sprite.y - radius <= 0) {
+        sprite.angle = -sprite.angle;
+      }
+      draw();
+    }
+
+    function resetPosition() {
+      sprite.x = 240;
+      sprite.y = 180;
+      sprite.angle = 0;
+      draw();
+    }
+
+    // Initial render
+    draw();
+  </script>
+
+</body>
+</html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Unpossible - Looks Category 🥭✨</title>
+  <style>
+    :root {
+      --looks-color: #9966FF;
+      --looks-dark: #7744DD;
+      --looks-light: #B388FF;
+      --bg-dark: #1e1e2f;
+      --panel-bg: #2a2a40;
+      --text-color: #ffffff;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+      background-color: var(--bg-dark);
+      color: var(--text-color);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    header {
+      width: 100%;
+      background: linear-gradient(135deg, var(--looks-dark), var(--looks-color));
+      padding: 2rem 0;
+      text-align: center;
+      box-shadow: 0 4px 20px rgba(153, 102, 255, 0.4);
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 2.5rem;
+      letter-spacing: 1px;
+    }
+
+    header p {
+      margin: 0.5rem 0 0;
+      font-size: 1.2rem;
+      opacity: 0.9;
+    }
+
+    .container {
+      max-width: 900px;
+      width: 90%;
+      margin: 2rem auto;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+    }
+
+    @media (max-width: 768px) {
+      .container {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .card {
+      background-color: var(--panel-bg);
+      border-radius: 16px;
+      padding: 1.5rem;
+      box-shadow: 0 8px 16px rgba(0,0,0,0.3);
+      border: 2px solid rgba(153, 102, 255, 0.2);
+    }
+
+    .card h2 {
+      margin-top: 0;
+      color: var(--looks-light);
+      border-bottom: 2px solid var(--looks-dark);
+      padding-bottom: 0.5rem;
+    }
+
+    /* Scratch-style block styling */
+    .block-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .scratch-block {
+      background-color: var(--looks-color);
+      color: white;
+      padding: 10px 16px;
+      border-radius: 8px;
+      font-weight: bold;
+      font-size: 0.95rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 4px 0 var(--looks-dark);
+      cursor: pointer;
+      transition: transform 0.1s ease, box-shadow 0.1s ease;
+      user-select: none;
+    }
+
+    .scratch-block:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 0 var(--looks-dark);
+    }
+
+    .scratch-block:active {
+      transform: translateY(2px);
+      box-shadow: 0 2px 0 var(--looks-dark);
+    }
+
+    .block-input {
+      background-color: white;
+      color: #333;
+      border-radius: 12px;
+      padding: 2px 8px;
+      font-size: 0.85rem;
+      border: none;
+      outline: none;
+      text-align: center;
+      font-weight: bold;
+    }
+
+    /* Interactive Sprite Preview Stage */
+    .stage {
+      background-color: #ffffff;
+      border-radius: 12px;
+      height: 250px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+      overflow: hidden;
+      border: 4px solid var(--looks-color);
+    }
+
+    .sprite {
+      font-size: 80px;
+      transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      position: absolute;
+    }
+
+    .speech-bubble {
+      position: absolute;
+      top: 20px;
+      background: white;
+      color: #333;
+      padding: 8px 16px;
+      border-radius: 16px;
+      font-weight: bold;
+      font-size: 0.9rem;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+      border: 2px solid #ccc;
+      display: none;
+    }
+
+    .speech-bubble::after {
+      content: '';
+      position: absolute;
+      bottom: -10px;
+      left: 50%;
+      transform: translateX(-50%);
+      border-width: 10px 10px 0;
+      border-style: solid;
+      border-color: white transparent;
+      display: block;
+      width: 0;
+    }
+
+    .badge {
+      background: var(--looks-dark);
+      color: white;
+      padding: 4px 8px;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      margin-left: 8px;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1></h1> unpossible - Looks.html 💜</h1>
+    <p>Interactive Custom Looks Blocks & Visual FX Sandbox!</p>
+  </header>
+
+  <div class="container">
+    
+    <!-- LEFT PANEL: CUSTOM LOOKS BLOCKS -->
+    <div class="card">
+      <h2>Looks Block Palette 🎨</h2>
+      <p style="font-size: 0.9rem; opacity: 0.8;">Click any block below to trigger it on the Stage!</p>
+      
+      <div class="block-list">
+        
+        <!-- Standard Block -->
+        <div class="scratch-block" onclick="sayHello()">
+          say <span class="block-input">Hello Scratch Mod! 🥭</span> for <span class="block-input">2</span> seconds
+        </div>
+
+        <!-- Custom Modded Block 1 -->
+        <div class="scratch-block" onclick="changeSize(20)">
+          change size by <span class="block-input">20</span> <span class="badge">MOD</span>
+        </div>
+
+        <!-- Custom Modded Block 2 -->
+        <div class="scratch-block" onclick="toggleSpin()">
+          spin effect <span class="block-input">toggle ⚡</span> <span class="badge">CUSTOM</span>
+        </div>
+
+        <!-- Custom Modded Block 3 -->
+        <div class="scratch-block" onclick="nextCostume()">
+          switch costume to <span class="block-input">next 🥭</span>
+        </div>
+
+        <!-- Reset Block -->
+        <div class="scratch-block" style="background-color: #ff4d4d; box-shadow: 0 4px 0 #cc0000;" onclick="resetSprite()">
+          reset looks 🔄
+        </div>
+
+      </div>
+    </div>
+
+    <!-- RIGHT PANEL: LIVE STAGE PREVIEW -->
+    <div class="card">
+      <h2>Stage Preview 📺</h2>
+      <div class="stage">
+        <div id="speech" class="speech-bubble">Hello Scratch Mod! 🥭</div>
+        <div id="sprite" class="sprite">🥭</div>
+      </div>
+      <p id="status-text" style="text-align: center; font-size: 0.9rem; margin-top: 1rem; color: var(--looks-light);">
+        Status: Ready for block execution! 🚀
+      </p>
+    </div>
+
+  </div>
+
+  <script>
+    const sprite = document.getElementById('sprite');
+    const speech = document.getElementById('speech');
+    const statusText = document.getElementById('status-text');
+
+    let currentScale = 1;
+    let isSpinning = false;
+    const costumes = ['🥭', '🚀', '🔥', '⚡', '🤖'];
+    let costumeIndex = 0;
+
+    function sayHello() {
+      speech.style.display = 'block';
+      statusText.innerText = 'Executed: say "Hello Scratch Mod! 🥭"';
+      setTimeout(() => {
+        speech.style.display = 'none';
+      }, 2000);
+    }
+
+    function changeSize(delta) {
+      currentScale += delta / 100;
+      sprite.style.transform = `scale(${currentScale}) ${isSpinning ? 'rotate(360deg)' : ''}`;
+      statusText.innerText = `Executed: change size by ${delta}% (Scale: ${Math.round(currentScale * 100)}%)`;
+    }
+
+    function toggleSpin() {
+      isSpinning = !isSpinning;
+      if (isSpinning) {
+        sprite.style.animation = 'spin 1s linear infinite';
+        statusText.innerText = 'Executed: spin effect ON ⚡';
+      } else {
+        sprite.style.animation = 'none';
+        statusText.innerText = 'Executed: spin effect OFF 🛑';
+      }
+    }
+
+    function nextCostume() {
+      costumeIndex = (costumeIndex + 1) % costumes.length;
+      sprite.innerText = costumes[costumeIndex];
+      statusText.innerText = `Executed: switched costume to ${costumes[costumeIndex]}`;
+    }
+
+    function resetSprite() {
+      currentScale = 1;
+      isSpinning = false;
+      costumeIndex = 0;
+      sprite.innerText = costumes[0];
+      sprite.style.transform = 'scale(1)';
+      sprite.style.animation = 'none';
+      speech.style.display = 'none';
+      statusText.innerText = 'Reset all Looks effects!';
+    }
+  </script>
+
+  <style>
+    @keyframes spin {
+      from { transform: scale(var(--scale, 1)) rotate(0deg); }
+      to { transform: scale(var(--scale, 1)) rotate(360deg); }
+    }
+  </style>
+</body>
+</html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Unpossible - Sound Category 🔊🥭</title>
+  <style>
+    :root {
+      --sound-color: #CF63CF;
+      --sound-dark: #A042A0;
+      --sound-light: #E88EE8;
+      --bg-dark: #1e1e2f;
+      --panel-bg: #2a2a40;
+      --text-color: #ffffff;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+      background-color: var(--bg-dark);
+      color: var(--text-color);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    header {
+      width: 100%;
+      background: linear-gradient(135deg, var(--sound-dark), var(--sound-color));
+      padding: 2rem 0;
+      text-align: center;
+      box-shadow: 0 4px 20px rgba(207, 99, 207, 0.4);
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 2.5rem;
+      letter-spacing: 1px;
+    }
+
+    header p {
+      margin: 0.5rem 0 0;
+      font-size: 1.2rem;
+      opacity: 0.9;
+    }
+
+    .container {
+      max-width: 900px;
+      width: 90%;
+      margin: 2rem auto;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+    }
+
+    @media (max-width: 768px) {
+      .container { grid-template-columns: 1fr; }
+    }
+
+    .card {
+      background-color: var(--panel-bg);
+      border-radius: 16px;
+      padding: 1.5rem;
+      box-shadow: 0 8px 16px rgba(0,0,0,0.3);
+      border: 2px solid rgba(207, 99, 207, 0.2);
+    }
+
+    .card h2 {
+      margin-top: 0;
+      color: var(--sound-light);
+      border-bottom: 2px solid var(--sound-dark);
+      padding-bottom: 0.5rem;
+    }
+
+    .block-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .scratch-block {
+      background-color: var(--sound-color);
+      color: white;
+      padding: 10px 16px;
+      border-radius: 8px;
+      font-weight: bold;
+      font-size: 0.95rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 4px 0 var(--sound-dark);
+      cursor: pointer;
+      transition: transform 0.1s ease, box-shadow 0.1s ease;
+      user-select: none;
+    }
+
+    .scratch-block:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 0 var(--sound-dark);
+    }
+
+    .scratch-block:active {
+      transform: translateY(2px);
+      box-shadow: 0 2px 0 var(--sound-dark);
+    }
+
+    .block-input {
+      background-color: white;
+      color: #333;
+      border-radius: 12px;
+      padding: 2px 8px;
+      font-size: 0.85rem;
+      border: none;
+      outline: none;
+      text-align: center;
+      font-weight: bold;
+    }
+
+    .audio-visualizer {
+      background-color: #11111a;
+      border-radius: 12px;
+      height: 250px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+      overflow: hidden;
+      border: 4px solid var(--sound-color);
+      gap: 8px;
+    }
+
+    .bar {
+      width: 16px;
+      height: 20px;
+      background-color: var(--sound-color);
+      border-radius: 8px;
+      transition: height 0.15s ease, background-color 0.2s ease;
+    }
+
+    .badge {
+      background: var(--sound-dark);
+      color: white;
+      padding: 4px 8px;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      margin-left: 8px;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>🔊 Unpossible - Sounds.html 🥭</h1>
+    <p>Audio Engine & Sound FX Block Preview!</p>
+  </header>
+
+  <div class="container">
+    <div class="card">
+      <h2>Sound Block Palette 🎵</h2>
+      <p style="font-size: 0.9rem; opacity: 0.8;">Click any block below to trigger Web Audio synthesizer sounds!</p>
+      
+      <div class="block-list">
+        <div class="scratch-block" onclick="playBeep(440, 'sine')">
+          play sound <span class="block-input">8-Bit Beep 🥭</span> until done
+        </div>
+
+        <div class="scratch-block" onclick="playBeep(880, 'square')">
+          play sound <span class="block-input">Synth Lead ⚡</span> <span class="badge">CUSTOM</span>
+        </div>
+
+        <div class="scratch-block" onclick="changePitch(200)">
+          change pitch effect by <span class="block-input">200</span>
+        </div>
+
+        <div class="scratch-block" onclick="playChord()">
+          play chord <span class="block-input">C-Major 🎼</span> <span class="badge">MOD</span>
+        </div>
+
+        <div class="scratch-block" style="background-color: #ff4d4d; box-shadow: 0 4px 0 #cc0000;" onclick="stopAllSounds()">
+          stop all sounds 🛑
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Audio Visualizer 🎛️</h2>
+      <div class="audio-visualizer" id="visualizer">
+        <div class="bar"></div>
+        <div class="bar"></div>
+        <div class="bar"></div>
+        <div class="bar"></div>
+        <div class="bar"></div>
+        <div class="bar"></div>
+        <div class="bar"></div>
+      </div>
+      <p id="status-text" style="text-align: center; font-size: 0.9rem; margin-top: 1rem; color: var(--sound-light);">
+        Audio Engine Ready! 🥭
+      </p>
+    </div>
+  </div>
+
+  <script>
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    const bars = document.querySelectorAll('.bar');
+    const statusText = document.getElementById('status-text');
+    let pitchOffset = 0;
+
+    function animateBars() {
+      bars.forEach(bar => {
+        const height = Math.floor(Math.random() * 180) + 20;
+        bar.style.height = height + 'px';
+        bar.style.backgroundColor = 'var(--sound-light)';
+      });
+      setTimeout(() => {
+        bars.forEach(bar => { bar.style.height = '20px'; bar.style.backgroundColor = 'var(--sound-color)'; });
+      }, 300);
+    }
+
+    function playBeep(freq, type = 'sine') {
+      if (audioCtx.state === 'suspended') audioCtx.resume();
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      
+      osc.type = type;
+      osc.frequency.setValueAtTime(freq + pitchOffset, audioCtx.currentTime);
+      gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.4);
+      
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      osc.start();
+      osc.stop(audioCtx.currentTime + 0.4);
+
+      animateBars();
+      statusText.innerText = `Played frequency: ${freq + pitchOffset} Hz (${type})`;
+    }
+
+    function changePitch(val) {
+      pitchOffset += val;
+      statusText.innerText = `Pitch effect increased by ${val} (Total Shift: +${pitchOffset} Hz)`;
+    }
+
+    function playChord() {
+      [261.63, 329.63, 392.00].forEach(f => playBeep(f, 'triangle'));
+      statusText.innerText = 'Played C-Major Chord! 🎼';
+    }
+
+    function stopAllSounds() {
+      pitchOffset = 0;
+      statusText.innerText = 'All sounds stopped & pitch reset! 🛑';
+    }
+  </script>
+</body>
+</html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Unpossible - Control Category 🔁🥭</title>
+  <style>
+    :root {
+      --control-color: #FFAB19;
+      --control-dark: #CF8B00;
+      --control-light: #FFC966;
+      --bg-dark: #1e1e2f;
+      --panel-bg: #2a2a40;
+      --text-color: #ffffff;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+      background-color: var(--bg-dark);
+      color: var(--text-color);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    header {
+      width: 100%;
+      background: linear-gradient(135deg, var(--control-dark), var(--control-color));
+      padding: 2rem 0;
+      text-align: center;
+      color: #222;
+      box-shadow: 0 4px 20px rgba(255, 171, 25, 0.4);
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 2.5rem;
+      letter-spacing: 1px;
+    }
+
+    header p {
+      margin: 0.5rem 0 0;
+      font-size: 1.2rem;
+      font-weight: bold;
+      opacity: 0.9;
+    }
+
+    .container {
+      max-width: 950px;
+      width: 90%;
+      margin: 2rem auto;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+    }
+
+    @media (max-width: 768px) {
+      .container { grid-template-columns: 1fr; }
+    }
+
+    .card {
+      background-color: var(--panel-bg);
+      border-radius: 16px;
+      padding: 1.5rem;
+      box-shadow: 0 8px 16px rgba(0,0,0,0.3);
+      border: 2px solid rgba(255, 171, 25, 0.2);
+    }
+
+    .card h2 {
+      margin-top: 0;
+      color: var(--control-light);
+      border-bottom: 2px solid var(--control-dark);
+      padding-bottom: 0.5rem;
+    }
+
+    .block-list {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    /* Standard Scratch Stack Block */
+    .scratch-block {
+      background-color: var(--control-color);
+      color: #222;
+      padding: 10px 16px;
+      border-radius: 8px;
+      font-weight: bold;
+      font-size: 0.95rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 4px 0 var(--control-dark);
+      cursor: pointer;
+      transition: transform 0.1s ease, box-shadow 0.1s ease;
+      user-select: none;
+    }
+
+    .scratch-block:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 0 var(--control-dark);
+    }
+
+    .scratch-block:active {
+      transform: translateY(2px);
+      box-shadow: 0 2px 0 var(--control-dark);
+    }
+
+    /* Scratch C-Block (Loops / Conditionals) */
+    .scratch-c-block {
+      background-color: var(--control-color);
+      color: #222;
+      border-radius: 8px;
+      font-weight: bold;
+      font-size: 0.95rem;
+      box-shadow: 0 4px 0 var(--control-dark);
+      cursor: pointer;
+      user-select: none;
+      overflow: hidden;
+      transition: transform 0.1s ease;
+    }
+
+    .scratch-c-block:hover {
+      transform: translateY(-2px);
+    }
+
+    .c-top {
+      padding: 10px 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .c-body {
+      background-color: rgba(30, 30, 47, 0.6);
+      margin-left: 16px;
+      padding: 10px 12px;
+      border-left: 12px solid var(--control-color);
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .c-bottom {
+      padding: 6px 16px;
+    }
+
+    .block-input {
+      background-color: white;
+      color: #333;
+      border-radius: 12px;
+      padding: 2px 8px;
+      font-size: 0.85rem;
+      border: none;
+      outline: none;
+      text-align: center;
+      font-weight: bold;
+    }
+
+    .badge {
+      background: var(--control-dark);
+      color: white;
+      padding: 3px 6px;
+      border-radius: 6px;
+      font-size: 0.75rem;
+      margin-left: 6px;
+    }
+
+    /* Stage / Clone Arena */
+    .arena {
+      background-color: #11111a;
+      border-radius: 12px;
+      height: 260px;
+      position: relative;
+      overflow: hidden;
+      border: 4px solid var(--control-color);
+      display: flex;
+      flex-wrap: wrap;
+      align-content: flex-start;
+      padding: 12px;
+      gap: 10px;
+    }
+
+    .clone-sprite {
+      font-size: 2rem;
+      animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      user-select: none;
+    }
+
+    @keyframes popIn {
+      0% { transform: scale(0); }
+      100% { transform: scale(1); }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>🔁 Unpossible - Control.html 🥭</h1>
+    <p>Loops, Clones, Conditionals & Execution Sandbox!</p>
+  </header>
+
+  <div class="container">
+    
+    <!-- LEFT PANEL: CONTROL BLOCK PALETTE -->
+    <div class="card">
+      <h2>Control Palette 🛠️</h2>
+      <p style="font-size: 0.9rem; opacity: 0.8;">Click any block below to trigger loop or clone operations!</p>
+      
+      <div class="block-list">
+        
+        <!-- Wait Block -->
+        <div class="scratch-block" onclick="runWait()">
+          wait <span class="block-input">1</span> seconds
+        </div>
+
+        <!-- C-Block Loop -->
+        <div class="scratch-c-block" onclick="runRepeatLoop()">
+          <div class="c-top">
+            repeat <span class="block-input">5</span>
+          </div>
+          <div class="c-body">
+            <div class="scratch-block" style="font-size: 0.85rem; padding: 6px 10px; pointer-events: none;">
+              create clone of <span class="block-input">myself 🥭</span>
+            </div>
+          </div>
+          <div class="c-bottom"></div>
+        </div>
+
+        <!-- Clone Creation Block -->
+        <div class="scratch-block" onclick="createClone()">
+          create clone of <span class="block-input">myself 🥭</span>
+        </div>
+
+        <!-- Custom Modded Block -->
+        <div class="scratch-block" onclick="spawnMangoBurst()">
+          burst clone spawn <span class="block-input">10x ⚡</span> <span class="badge">CUSTOM</span>
+        </div>
+
+        <!-- Delete Clones Block -->
+        <div class="scratch-block" style="background-color: #ff4d4d; color: white; box-shadow: 0 4px 0 #cc0000;" onclick="clearAllClones()">
+          delete all clones 🗑️
+        </div>
+
+      </div>
+    </div>
+
+    <!-- RIGHT PANEL: CLONE & LOG STAGE -->
+    <div class="card">
+      <h2>Clone & Loop Arena 🏟️</h2>
+      <div class="arena" id="arena">
+        <div class="clone-sprite" title="Original Sprite">🥭</div>
+      </div>
+      
+      <p id="status-text" style="text-align: center; font-size: 0.9rem; margin-top: 1rem; color: var(--control-light);">
+        Active Clones: 0 | Execution Engine Ready! 🥭
+      </p>
+    </div>
+
+  </div>
+
+  <script>
+    const arena = document.getElementById('arena');
+    const statusText = document.getElementById('status-text');
+    let cloneCount = 0;
+
+    const mangoIcons = ['🥭', '⚡', '🚀', '🔥', '✨', '💎'];
+
+    function updateStatus(msg) {
+      statusText.innerText = `Active Clones: ${cloneCount} | ${msg}`;
+    }
+
+    function createClone() {
+      cloneCount++;
+      const clone = document.createElement('div');
+      clone.className = 'clone-sprite';
+      const randomIcon = mangoIcons[Math.floor(Math.random() * mangoIcons.length)];
+      clone.innerText = randomIcon;
+      arena.appendChild(clone);
+      updateStatus(`Created 1 clone (${randomIcon})!`);
+    }
+
+    function runRepeatLoop() {
+      let count = 0;
+      const interval = setInterval(() => {
+        if (count < 5) {
+          createClone();
+          count++;
+        } else {
+          clearInterval(interval);
+          updateStatus('Repeat (5) loop completed! 🔁');
+        }
+      }, 200);
+    }
+
+    function spawnMangoBurst() {
+      for (let i = 0; i < 10; i++) {
+        setTimeout(() => createClone(), i * 50);
+      }
+      updateStatus('Executed Burst Clone Spawn (10x)! ⚡');
+    }
+
+    function runWait() {
+      updateStatus('Waiting 1 second... ⏳');
+      setTimeout(() => {
+        updateStatus('Wait finished! Proceeding to next block. ⏱️');
+      }, 1000);
+    }
+
+    function clearAllClones() {
+      arena.innerHTML = '<div class="clone-sprite" title="Original Sprite">🥭</div>';
+      cloneCount = 0;
+      updateStatus('Deleted all clones! 🗑️');
+    }
+  </script>
+
+</body>
+</html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Unpossible - Sensing Category 👁️🥭</title>
+  <style>
+    :root {
+      --sensing-color: #4CBFE6;
+      --sensing-dark: #2E8BAE;
+      --sensing-light: #8CE0FC;
+      --bg-dark: #1e1e2f;
+      --panel-bg: #2a2a40;
+      --text-color: #ffffff;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+      background-color: var(--bg-dark);
+      color: var(--text-color);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    header {
+      width: 100%;
+      background: linear-gradient(135deg, var(--sensing-dark), var(--sensing-color));
+      padding: 2rem 0;
+      text-align: center;
+      box-shadow: 0 4px 20px rgba(76, 191, 230, 0.4);
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 2.5rem;
+      letter-spacing: 1px;
+    }
+
+    header p {
+      margin: 0.5rem 0 0;
+      font-size: 1.2rem;
+      opacity: 0.95;
+    }
+
+    .container {
+      max-width: 900px;
+      width: 90%;
+      margin: 2rem auto;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+    }
+
+    @media (max-width: 768px) {
+      .container { grid-template-columns: 1fr; }
+    }
+
+    .card {
+      background-color: var(--panel-bg);
+      border-radius: 16px;
+      padding: 1.5rem;
+      box-shadow: 0 8px 16px rgba(0,0,0,0.3);
+      border: 2px solid rgba(76, 191, 230, 0.2);
+    }
+
+    .card h2 {
+      margin-top: 0;
+      color: var(--sensing-light);
+      border-bottom: 2px solid var(--sensing-dark);
+      padding-bottom: 0.5rem;
+    }
+
+    .block-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    /* Standard Reporter / Command Block */
+    .scratch-block {
+      background-color: var(--sensing-color);
+      color: white;
+      padding: 10px 16px;
+      border-radius: 8px;
+      font-weight: bold;
+      font-size: 0.95rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 4px 0 var(--sensing-dark);
+      cursor: pointer;
+      transition: transform 0.1s ease, box-shadow 0.1s ease;
+      user-select: none;
+    }
+
+    .scratch-block:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 0 var(--sensing-dark);
+    }
+
+    .scratch-block:active {
+      transform: translateY(2px);
+      box-shadow: 0 2px 0 var(--sensing-dark);
+    }
+
+    /* Scratch Boolean Hexagon Shape */
+    .scratch-boolean {
+      background-color: var(--sensing-color);
+      color: white;
+      padding: 8px 18px;
+      clip-path: polygon(12px 0%, calc(100% - 12px) 0%, 100% 50%, calc(100% - 12px) 100%, 12px 100%, 0% 50%);
+      font-weight: bold;
+      font-size: 0.95rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      user-select: none;
+      transition: filter 0.2s ease;
+    }
+
+    .scratch-boolean:hover {
+      filter: brightness(1.1);
+    }
+
+    /* Scratch Oval Reporter Shape */
+    .scratch-reporter {
+      background-color: var(--sensing-color);
+      color: white;
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-weight: bold;
+      font-size: 0.9rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      box-shadow: 0 3px 0 var(--sensing-dark);
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .block-input {
+      background-color: white;
+      color: #333;
+      border-radius: 12px;
+      padding: 2px 8px;
+      font-size: 0.85rem;
+      border: none;
+      outline: none;
+      text-align: center;
+      font-weight: bold;
+    }
+
+    .sensing-stage {
+      background-color: #11111a;
+      border-radius: 12px;
+      height: 250px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+      overflow: hidden;
+      border: 4px solid var(--sensing-color);
+      cursor: crosshair;
+    }
+
+    .crosshair-target {
+      width: 20px;
+      height: 20px;
+      border: 2px solid var(--sensing-light);
+      border-radius: 50%;
+      position: absolute;
+      pointer-events: none;
+      transform: translate(-50%, -50%);
+      transition: width 0.1s, height 0.1s;
+    }
+
+    .readout-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      width: 90%;
+      margin-top: 1rem;
+    }
+
+    .readout-box {
+      background: rgba(76, 191, 230, 0.15);
+      border: 1px solid var(--sensing-color);
+      border-radius: 8px;
+      padding: 6px 12px;
+      font-family: monospace;
+      font-size: 0.85rem;
+      color: var(--sensing-light);
+    }
+
+    .badge {
+      background: var(--sensing-dark);
+      color: white;
+      padding: 3px 6px;
+      border-radius: 6px;
+      font-size: 0.75rem;
+      margin-left: 6px;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>👁️ UnPossible - Sensing.html 🥭</h1>
+    <p>Real-Time Inputs, Trackers & Sensing Block Preview!</p>
+  </header>
+
+  <div class="container">
+    
+    <!-- LEFT PANEL: SENSING BLOCKS -->
+    <div class="card">
+      <h2>Sensing Block Palette 🔍</h2>
+      <p style="font-size: 0.9rem; opacity: 0.8;">Click any block below to sense input data!</p>
+      
+      <div class="block-list">
+        
+        <!-- Boolean Block -->
+        <div class="scratch-boolean" onclick="checkMouseDown()">
+          key <span class="block-input">space</span> pressed?
+        </div>
+
+        <!-- Touch Boolean Block -->
+        <div class="scratch-boolean" onclick="checkTouchingPointer()">
+          touching <span class="block-input">mouse-pointer</span>?
+        </div>
+
+        <!-- Reporter Block: Mouse X -->
+        <div>
+          <div class="scratch-reporter" onclick="reportMouseX()">
+            mouse x
+          </div>
+          <div class="scratch-reporter" onclick="reportMouseY()">
+            mouse y
+          </div>
+        </div>
+
+        <!-- Custom Modded Block -->
+        <div class="scratch-block" onclick="askPrompt()">
+          ask <span class="block-input">What mod is this? 🥭</span> and wait
+        </div>
+
+        <!-- Custom Reporter -->
+        <div class="scratch-reporter" onclick="reportTimer()">
+          timer <span class="badge">LIVE</span>
+        </div>
+
+        <div class="scratch-boolean" onclick="triggerLoudness()">
+          loudness > <span class="block-input">10</span> <span class="badge">CUSTOM</span>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- RIGHT PANEL: INTERACTIVE SENSING STAGE -->
+    <div class="card">
+      <h2>Interactive Sensing Stage 🎯</h2>
+      <div class="sensing-stage" id="stage">
+        <div id="target" class="crosshair-target" style="left: 50%; top: 50%;"></div>
+        <p style="opacity: 0.5; font-size: 0.85rem; pointer-events: none;">Move cursor inside this stage!</p>
+      </div>
+
+      <div class="readout-grid">
+        <div class="readout-box" id="box-x">Mouse X: 0</div>
+        <div class="readout-box" id="box-y">Mouse Y: 0</div>
+        <div class="readout-box" id="box-down">Mouse Down: false</div>
+        <div class="readout-box" id="box-timer">Timer: 0.0s</div>
+      </div>
+
+      <p id="status-text" style="text-align: center; font-size: 0.9rem; margin-top: 1rem; color: var(--sensing-light);">
+        Sensing sensors initialized! 🥭
+      </p>
+    </div>
+
+  </div>
+
+  <script>
+    const stage = document.getElementById('stage');
+    const target = document.getElementById('target');
+    const boxX = document.getElementById('box-x');
+    const boxY = document.getElementById('box-y');
+    const boxDown = document.getElementById('box-down');
+    const boxTimer = document.getElementById('box-timer');
+    const statusText = document.getElementById('status-text');
+
+    let mouseX = 0;
+    let mouseY = 0;
+    let isMouseDown = false;
+    const startTime = Date.now();
+
+    // Live Timer Update
+    setInterval(() => {
+      const elapsed = ((Date.now() - startTime) / 1000).toFixed(1);
+      boxTimer.innerText = `Timer: ${elapsed}s`;
+    }, 100);
+
+    // Track cursor movement on stage
+    stage.addEventListener('mousemove', (e) => {
+      const rect = stage.getBoundingClientRect();
+      mouseX = Math.round(e.clientX - rect.left - (rect.width / 2));
+      mouseY = Math.round((rect.height / 2) - (e.clientY - rect.top));
+
+      target.style.left = `${e.clientX - rect.left}px`;
+      target.style.top = `${e.clientY - rect.top}px`;
+
+      boxX.innerText = `Mouse X: ${mouseX}`;
+      boxY.innerText = `Mouse Y: ${mouseY}`;
+    });
+
+    stage.addEventListener('mousedown', () => {
+      isMouseDown = true;
+      boxDown.innerText = `Mouse Down: true`;
+      target.style.width = '30px';
+      target.style.height = '30px';
+    });
+
+    stage.addEventListener('mouseup', () => {
+      isMouseDown = false;
+      boxDown.innerText = `Mouse Down: false`;
+      target.style.width = '20px';
+      target.style.height = '20px';
+    });
+
+    function checkMouseDown() {
+      statusText.innerText = `Evaluated <key space pressed?>: ${isMouseDown ? 'TRUE' : 'FALSE'}`;
+    }
+
+    function checkTouchingPointer() {
+      statusText.innerText = `Evaluated <touching mouse-pointer?>: TRUE (Cursor active)`;
+    }
+
+    function reportMouseX() {
+      statusText.innerText = `Reported (mouse x): ${mouseX}`;
+    }
+
+    function reportMouseY() {
+      statusText.innerText = `Reported (mouse y): ${mouseY}`;
+    }
+
+    function reportTimer() {
+      const elapsed = ((Date.now() - startTime) / 1000).toFixed(1);
+      statusText.innerText = `Reported (timer): ${elapsed} seconds`;
+    }
+
+    function askPrompt() {
+      const ans = prompt("What mod is this? 🥭");
+      if (ans) {
+        statusText.innerText = `Answer reported: "${ans}"`;
+      }
+    }
+
+    function triggerLoudness() {
+      const mockLoudness = Math.floor(Math.random() * 100);
+      statusText.innerText = `Evaluated <loudness > 10>: ${mockLoudness > 10 ? 'TRUE' : 'FALSE'} (Loudness level: ${mockLoudness})`;
+    }
+  </script>
+</body>
+</html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Unpossible - Operators Category 🟢🥭</title>
+  <style>
+    :root {
+      --operators-color: #59C059;
+      --operators-dark: #389438;
+      --operators-light: #8CE08C;
+      --bg-dark: #1e1e2f;
+      --panel-bg: #2a2a40;
+      --text-color: #ffffff;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+      background-color: var(--bg-dark);
+      color: var(--text-color);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    header {
+      width: 100%;
+      background: linear-gradient(135deg, var(--operators-dark), var(--operators-color));
+      padding: 2rem 0;
+      text-align: center;
+      box-shadow: 0 4px 20px rgba(89, 192, 89, 0.4);
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 2.5rem;
+      letter-spacing: 1px;
+    }
+
+    header p {
+      margin: 0.5rem 0 0;
+      font-size: 1.2rem;
+      opacity: 0.95;
+    }
+
+    .container {
+      max-width: 900px;
+      width: 90%;
+      margin: 2rem auto;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+    }
+
+    @media (max-width: 768px) {
+      .container { grid-template-columns: 1fr; }
+    }
+
+    .card {
+      background-color: var(--panel-bg);
+      border-radius: 16px;
+      padding: 1.5rem;
+      box-shadow: 0 8px 16px rgba(0,0,0,0.3);
+      border: 2px solid rgba(89, 192, 89, 0.2);
+    }
+
+    .card h2 {
+      margin-top: 0;
+      color: var(--operators-light);
+      border-bottom: 2px solid var(--operators-dark);
+      padding-bottom: 0.5rem;
+    }
+
+    .block-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    /* Oval Reporter Shape */
+    .scratch-reporter {
+      background-color: var(--operators-color);
+      color: white;
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-weight: bold;
+      font-size: 0.95rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 3px 0 var(--operators-dark);
+      cursor: pointer;
+      user-select: none;
+      transition: transform 0.1s ease, box-shadow 0.1s ease;
+    }
+
+    .scratch-reporter:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 0 var(--operators-dark);
+    }
+
+    .scratch-reporter:active {
+      transform: translateY(2px);
+      box-shadow: 0 1px 0 var(--operators-dark);
+    }
+
+    /* Hexagonal Boolean Shape */
+    .scratch-boolean {
+      background-color: var(--operators-color);
+      color: white;
+      padding: 8px 18px;
+      clip-path: polygon(12px 0%, calc(100% - 12px) 0%, 100% 50%, calc(100% - 12px) 100%, 12px 100%, 0% 50%);
+      font-weight: bold;
+      font-size: 0.95rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      user-select: none;
+      transition: filter 0.2s ease;
+    }
+
+    .scratch-boolean:hover {
+      filter: brightness(1.1);
+    }
+
+    .block-input {
+      background-color: white;
+      color: #333;
+      border-radius: 12px;
+      padding: 2px 8px;
+      font-size: 0.85rem;
+      border: none;
+      outline: none;
+      text-align: center;
+      font-weight: bold;
+    }
+
+    .eval-stage {
+      background-color: #11111a;
+      border-radius: 12px;
+      height: 250px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+      overflow: hidden;
+      border: 4px solid var(--operators-color);
+      padding: 1rem;
+      box-sizing: border-box;
+    }
+
+    .result-display {
+      font-size: 2.5rem;
+      font-weight: bold;
+      color: var(--operators-light);
+      margin: 0.5rem 0;
+      text-shadow: 0 0 10px rgba(140, 224, 140, 0.4);
+    }
+
+    .badge {
+      background: var(--operators-dark);
+      color: white;
+      padding: 3px 6px;
+      border-radius: 6px;
+      font-size: 0.75rem;
+      margin-left: 6px;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>🟢 Custom Scratch Mod - Operators.html 🥭</h1>
+    <p>Math Opcodes, String Functions & Logic Evaluator!</p>
+  </header>
+
+  <div class="container">
+    
+    <!-- LEFT PANEL: OPERATOR BLOCKS -->
+    <div class="card">
+      <h2>Operators Block Palette 🔢</h2>
+      <p style="font-size: 0.9rem; opacity: 0.8;">Click any operator to evaluate the result!</p>
+      
+      <div class="block-list">
+        
+        <!-- Math Addition -->
+        <div class="scratch-reporter" onclick="calcAdd()">
+          <span class="block-input" id="add1">15</span> + <span class="block-input" id="add2">25</span>
+        </div>
+
+        <!-- Pick Random -->
+        <div class="scratch-reporter" onclick="calcRandom()">
+          pick random <span class="block-input" id="rand1">1</span> to <span class="block-input" id="rand2">100</span>
+        </div>
+
+        <!-- Greater Than Boolean -->
+        <div class="scratch-boolean" onclick="calcGreaterThan()">
+          <span class="block-input" id="gt1">50</span> &gt; <span class="block-input" id="gt2">20</span>
+        </div>
+
+        <!-- Join Strings -->
+        <div class="scratch-reporter" onclick="calcJoin()">
+          join <span class="block-input" id="j1">Mango</span> <span class="block-input" id="j2"> Mod 🥭</span>
+        </div>
+
+        <!-- Custom Power Block -->
+        <div class="scratch-reporter" onclick="calcPower()">
+          <span class="block-input" id="p1">2</span> ^ <span class="block-input" id="p2">8</span> <span class="badge">CUSTOM</span>
+        </div>
+
+        <!-- Modulo Reporter -->
+        <div class="scratch-reporter" onclick="calcMod()">
+          <span class="block-input" id="m1">17</span> mod <span class="block-input" id="m2">5</span> <span class="badge">MOD</span>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- RIGHT PANEL: EVALUATOR STAGE -->
+    <div class="card">
+      <h2>Expression Evaluator 🖥️</h2>
+      <div class="eval-stage">
+        <p style="margin: 0; opacity: 0.6; font-size: 0.9rem;">Evaluated Output:</p>
+        <div class="result-display" id="output">--</div>
+        <p id="expression-type" style="margin: 0; font-size: 0.85rem; color: var(--operators-light); opacity: 0.8;">
+          Type: Pending Evaluation
+        </p>
+      </div>
+
+      <p id="status-text" style="text-align: center; font-size: 0.9rem; margin-top: 1rem; color: var(--operators-light);">
+        Opcode engine ready! Click an operator block to calculate. 🥭
+      </p>
+    </div>
+
+  </div>
+
+  <script>
+    const output = document.getElementById('output');
+    const exprType = document.getElementById('expression-type');
+    const statusText = document.getElementById('status-text');
+
+    function calcAdd() {
+      const v1 = parseFloat(document.getElementById('add1').innerText);
+      const v2 = parseFloat(document.getElementById('add2').innerText);
+      const res = v1 + v2;
+      output.innerText = res;
+      exprType.innerText = "Type: Number (Addition)";
+      statusText.innerText = `Evaluated: ${v1} + ${v2} = ${res}`;
+    }
+
+    function calcRandom() {
+      const min = parseInt(document.getElementById('rand1').innerText);
+      const max = parseInt(document.getElementById('rand2').innerText);
+      const res = Math.floor(Math.random() * (max - min + 1)) + min;
+      output.innerText = res;
+      exprType.innerText = "Type: Number (Random Integer)";
+      statusText.innerText = `Evaluated: pick random ${min} to ${max} -> ${res}`;
+    }
+
+    function calcGreaterThan() {
+      const v1 = parseFloat(document.getElementById('gt1').innerText);
+      const v2 = parseFloat(document.getElementById('gt2').innerText);
+      const res = v1 > v2;
+      output.innerText = res ? "TRUE" : "FALSE";
+      exprType.innerText = "Type: Boolean";
+      statusText.innerText = `Evaluated: <${v1} > ${v2}> -> ${res ? 'true' : 'false'}`;
+    }
+
+    function calcJoin() {
+      const s1 = document.getElementById('j1').innerText;
+      const s2 = document.getElementById('j2').innerText;
+      const res = s1 + s2;
+      output.innerText = `"${res}"`;
+      exprType.innerText = "Type: String (Concatenation)";
+      statusText.innerText = `Evaluated: join "${s1}" "${s2}"`;
+    }
+
+    function calcPower() {
+      const base = parseFloat(document.getElementById('p1').innerText);
+      const exp = parseFloat(document.getElementById('p2').innerText);
+      const res = Math.pow(base, exp);
+      output.innerText = res;
+      exprType.innerText = "Type: Number (Exponentiation)";
+      statusText.innerText = `Evaluated: ${base} ^ ${exp} = ${res}`;
+    }
+
+    function calcMod() {
+      const v1 = parseFloat(document.getElementById('m1').innerText);
+      const v2 = parseFloat(document.getElementById('m2').innerText);
+      const res = v1 % v2;
+      output.innerText = res;
+      exprType.innerText = "Type: Number (Modulo)";
+      statusText.innerText = `Evaluated: ${v1} mod ${v2} = ${res}`;
+    }
+  </script>
+</body>
+</html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Unpossible - Variables Category 🟧🥭</title>
+  <style>
+    :root {
+      --variables-color: #FF8C1A;
+      --variables-dark: #C86400;
+      --variables-light: #FFB366;
+      --bg-dark: #1e1e2f;
+      --panel-bg: #2a2a40;
+      --text-color: #ffffff;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+      background-color: var(--bg-dark);
+      color: var(--text-color);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    header {
+      width: 100%;
+      background: linear-gradient(135deg, var(--variables-dark), var(--variables-color));
+      padding: 2rem 0;
+      text-align: center;
+      box-shadow: 0 4px 20px rgba(255, 140, 26, 0.4);
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 2.5rem;
+      letter-spacing: 1px;
+    }
+
+    header p {
+      margin: 0.5rem 0 0;
+      font-size: 1.2rem;
+      opacity: 0.95;
+    }
+
+    .container {
+      max-width: 900px;
+      width: 90%;
+      margin: 2rem auto;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+    }
+
+    @media (max-width: 768px) {
+      .container { grid-template-columns: 1fr; }
+    }
+
+    .card {
+      background-color: var(--panel-bg);
+      border-radius: 16px;
+      padding: 1.5rem;
+      box-shadow: 0 8px 16px rgba(0,0,0,0.3);
+      border: 2px solid rgba(255, 140, 26, 0.2);
+    }
+
+    .card h2 {
+      margin-top: 0;
+      color: var(--variables-light);
+      border-bottom: 2px solid var(--variables-dark);
+      padding-bottom: 0.5rem;
+    }
+
+    .block-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    /* Stack Block */
+    .scratch-block {
+      background-color: var(--variables-color);
+      color: white;
+      padding: 10px 16px;
+      border-radius: 8px;
+      font-weight: bold;
+      font-size: 0.95rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 4px 0 var(--variables-dark);
+      cursor: pointer;
+      transition: transform 0.1s ease, box-shadow 0.1s ease;
+      user-select: none;
+    }
+
+    .scratch-block:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 0 var(--variables-dark);
+    }
+
+    .scratch-block:active {
+      transform: translateY(2px);
+      box-shadow: 0 2px 0 var(--variables-dark);
+    }
+
+    /* Reporter Block */
+    .scratch-reporter {
+      background-color: var(--variables-color);
+      color: white;
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-weight: bold;
+      font-size: 0.9rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      box-shadow: 0 3px 0 var(--variables-dark);
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .block-input {
+      background-color: white;
+      color: #333;
+      border-radius: 12px;
+      padding: 2px 8px;
+      font-size: 0.85rem;
+      border: none;
+      outline: none;
+      text-align: center;
+      font-weight: bold;
+    }
+
+    .variables-stage {
+      background-color: #11111a;
+      border-radius: 12px;
+      height: 260px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      position: relative;
+      overflow: hidden;
+      border: 4px solid var(--variables-color);
+      padding: 1rem;
+      box-sizing: border-box;
+      gap: 12px;
+    }
+
+    /* Scratch Variable Monitor Display */
+    .var-monitor {
+      background-color: #e6e6e6;
+      border: 2px solid #ccc;
+      border-radius: 6px;
+      padding: 4px 8px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: #333;
+      font-weight: bold;
+      font-size: 0.85rem;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    }
+
+    .var-value {
+      background-color: var(--variables-color);
+      color: white;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-family: monospace;
+      font-size: 0.9rem;
+    }
+
+    /* Scratch List Display */
+    .list-monitor {
+      background-color: #e6e6e6;
+      border: 2px solid #ccc;
+      border-radius: 6px;
+      width: 90%;
+      height: 140px;
+      display: flex;
+      flex-direction: column;
+      color: #333;
+      overflow: hidden;
+    }
+
+    .list-header {
+      background-color: #dcdcdc;
+      padding: 4px 8px;
+      font-weight: bold;
+      font-size: 0.8rem;
+      text-align: center;
+      border-bottom: 1px solid #bbb;
+    }
+
+    .list-content {
+      flex: 1;
+      overflow-y: auto;
+      padding: 4px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .list-item {
+      background-color: white;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      padding: 2px 6px;
+      font-size: 0.8rem;
+      display: flex;
+      justify-content: space-between;
+      font-family: monospace;
+    }
+
+    .badge {
+      background: var(--variables-dark);
+      color: white;
+      padding: 3px 6px;
+      border-radius: 6px;
+      font-size: 0.75rem;
+      margin-left: 6px;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>🟧 Unpossible - Variables.html 🥭</h1>
+    <p>Variable Monitors, Lists & State Management!</p>
+  </header>
+
+  <div class="container">
+    
+    <!-- LEFT PANEL: VARIABLES BLOCKS -->
+    <div class="card">
+      <h2>Variables & Lists Palette 📊</h2>
+      <p style="font-size: 0.9rem; opacity: 0.8;">Click any block to update memory and stage monitors!</p>
+      
+      <div class="block-list">
+        
+        <!-- Set Variable -->
+        <div class="scratch-block" onclick="setVar()">
+          set <span class="block-input">my variable</span> to <span class="block-input">100</span>
+        </div>
+
+        <!-- Change Variable -->
+        <div class="scratch-block" onclick="changeVar(1)">
+          change <span class="block-input">my variable</span> by <span class="block-input">1</span>
+        </div>
+
+        <!-- Reporter -->
+        <div>
+          <div class="scratch-reporter" onclick="reportVar()">
+            my variable
+          </div>
+        </div>
+
+        <!-- Add to List -->
+        <div class="scratch-block" onclick="addToList()">
+          add <span class="block-input">mango 🥭</span> to <span class="block-input">my list</span>
+        </div>
+
+        <!-- Delete All Of List -->
+        <div class="scratch-block" style="background-color: #ff4d4d; box-shadow: 0 4px 0 #cc0000;" onclick="clearList()">
+          delete all of <span class="block-input">my list</span> 🗑️
+        </div>
+
+        <!-- Custom Local Storage Block -->
+        <div class="scratch-block" onclick="saveToStorage()">
+          save <span class="block-input">my variable</span> to local storage <span class="badge">CUSTOM</span>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- RIGHT PANEL: STAGE MONITORS -->
+    <div class="card">
+      <h2>Live Stage Monitors 📺</h2>
+      <div class="variables-stage">
+        
+        <!-- Variable Monitor -->
+        <div class="var-monitor">
+          <span>my variable:</span>
+          <span class="var-value" id="var-display">0</span>
+        </div>
+
+        <!-- List Monitor -->
+        <div class="list-monitor">
+          <div class="list-header">my list (length: <span id="list-len">0</span>)</div>
+          <div class="list-content" id="list-display">
+            <!-- Dynamic items go here -->
+          </div>
+        </div>
+
+      </div>
+
+      <p id="status-text" style="text-align: center; font-size: 0.9rem; margin-top: 1rem; color: var(--variables-light);">
+        State engine ready! Click blocks to manipulate variables. 🥭
+      </p>
+    </div>
+
+  </div>
+
+  <script>
+    let myVariable = 0;
+    const myList = [];
+
+    const varDisplay = document.getElementById('var-display');
+    const listDisplay = document.getElementById('list-display');
+    const listLen = document.getElementById('list-len');
+    const statusText = document.getElementById('status-text');
+
+    function updateListUI() {
+      listDisplay.innerHTML = '';
+      myList.forEach((item, idx) => {
+        const div = document.createElement('div');
+        div.className = 'list-item';
+        div.innerHTML = `<span>${idx + 1}</span> <strong>${item}</strong>`;
+        listDisplay.appendChild(div);
+      });
+      listLen.innerText = myList.length;
+    }
+
+    function setVar() {
+      myVariable = 100;
+      varDisplay.innerText = myVariable;
+      statusText.innerText = 'Executed: set [my variable] to 100';
+    }
+
+    function changeVar(val) {
+      myVariable += val;
+      varDisplay.innerText = myVariable;
+      statusText.innerText = `Executed: change [my variable] by ${val}`;
+    }
+
+    function reportVar() {
+      statusText.innerText = `Reported (my variable): ${myVariable}`;
+    }
+
+    function addToList() {
+      const items = ['mango 🥭', 'turbo ⚡', 'code 🚀', 'block 🧱', 'fire 🔥'];
+      const newItem = items[Math.floor(Math.random() * items.length)];
+      myList.push(newItem);
+      updateListUI();
+      statusText.innerText = `Executed: add "${newItem}" to [my list]`;
+    }
+
+    function clearList() {
+      myList.length = 0;
+      updateListUI();
+      statusText.innerText = 'Executed: delete all of [my list]';
+    }
+
+    function saveToStorage() {
+      localStorage.setItem('scratch_mod_var', myVariable);
+      statusText.innerText = `Executed: saved value ${myVariable} to localStorage! 💾`;
+    }
+  </script>
+</body>
+</html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Unpossible - 3D Category 🧊🥭</title>
+  <!-- Three.js CDN for real 3D WebGL rendering -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <style>
+    :root {
+      --3d-color: #00C2B1;
+      --3d-dark: #008B7E;
+      --3d-light: #66E0D5;
+      --bg-dark: #1e1e2f;
+      --panel-bg: #2a2a40;
+      --text-color: #ffffff;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+      background-color: var(--bg-dark);
+      color: var(--text-color);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    header {
+      width: 100%;
+      background: linear-gradient(135deg, var(--3d-dark), var(--3d-color));
+      padding: 2rem 0;
+      text-align: center;
+      box-shadow: 0 4px 20px rgba(0, 194, 177, 0.4);
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 2.5rem;
+      letter-spacing: 1px;
+    }
+
+    header p {
+      margin: 0.5rem 0 0;
+      font-size: 1.2rem;
+      opacity: 0.95;
+    }
+
+    .container {
+      max-width: 900px;
+      width: 90%;
+      margin: 2rem auto;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+    }
+
+    @media (max-width: 768px) {
+      .container { grid-template-columns: 1fr; }
+    }
+
+    .card {
+      background-color: var(--panel-bg);
+      border-radius: 16px;
+      padding: 1.5rem;
+      box-shadow: 0 8px 16px rgba(0,0,0,0.3);
+      border: 2px solid rgba(0, 194, 177, 0.2);
+    }
+
+    .card h2 {
+      margin-top: 0;
+      color: var(--3d-light);
+      border-bottom: 2px solid var(--3d-dark);
+      padding-bottom: 0.5rem;
+    }
+
+    .block-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    /* Stack Block */
+    .scratch-block {
+      background-color: var(--3d-color);
+      color: white;
+      padding: 10px 16px;
+      border-radius: 8px;
+      font-weight: bold;
+      font-size: 0.95rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 4px 0 var(--3d-dark);
+      cursor: pointer;
+      transition: transform 0.1s ease, box-shadow 0.1s ease;
+      user-select: none;
+    }
+
+    .scratch-block:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 0 var(--3d-dark);
+    }
+
+    .scratch-block:active {
+      transform: translateY(2px);
+      box-shadow: 0 2px 0 var(--3d-dark);
+    }
+
+    .block-input {
+      background-color: white;
+      color: #333;
+      border-radius: 12px;
+      padding: 2px 8px;
+      font-size: 0.85rem;
+      border: none;
+      outline: none;
+      text-align: center;
+      font-weight: bold;
+    }
+
+    .stage-3d {
+      background-color: #000;
+      border-radius: 12px;
+      height: 260px;
+      width: 100%;
+      position: relative;
+      overflow: hidden;
+      border: 4px solid var(--3d-color);
+      box-sizing: border-box;
+    }
+
+    #webgl-canvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    .badge {
+      background: var(--3d-dark);
+      color: white;
+      padding: 3px 6px;
+      border-radius: 6px;
+      font-size: 0.75rem;
+      margin-left: 6px;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>🧊 Unpossible - 3d.html 🥭</h1>
+    <p>3D WebGL Engine, Mesh Manipulation & Camera Blocks!</p>
+  </header>
+
+  <div class="container">
+    
+    <!-- LEFT PANEL: 3D BLOCKS -->
+    <div class="card">
+      <h2>3D Block Palette 🎮</h2>
+      <p style="font-size: 0.9rem; opacity: 0.8;">Click blocks to execute real 3D WebGL actions!</p>
+      
+      <div class="block-list">
+        
+        <!-- Spawn Cube -->
+        <div class="scratch-block" onclick="spawnMesh('cube')">
+          spawn 3D mesh <span class="block-input">Cube 🧊</span> <span class="badge">3D MOD</span>
+        </div>
+
+        <!-- Spawn Sphere -->
+        <div class="scratch-block" onclick="spawnMesh('sphere')">
+          spawn 3D mesh <span class="block-input">Sphere 🔮</span> <span class="badge">3D MOD</span>
+        </div>
+
+        <!-- Rotate 3D -->
+        <div class="scratch-block" onclick="toggleRotation()">
+          turn 3D pitch/yaw <span class="block-input">toggle ⚡</span>
+        </div>
+
+        <!-- Change Wireframe -->
+        <div class="scratch-block" onclick="toggleWireframe()">
+          set style to <span class="block-input">wireframe 🌐</span>
+        </div>
+
+        <!-- Camera Zoom -->
+        <div class="scratch-block" onclick="zoomCamera(-1)">
+          change camera zoom by <span class="block-input">+1 🔍</span>
+        </div>
+
+        <!-- Reset 3D Stage -->
+        <div class="scratch-block" style="background-color: #ff4d4d; box-shadow: 0 4px 0 #cc0000;" onclick="reset3DStage()">
+          reset 3D world 🔄
+        </div>
+
+      </div>
+    </div>
+
+    <!-- RIGHT PANEL: REAL 3D WEBGL STAGE -->
+    <div class="card">
+      <h2>WebGL 3D Viewport 📺</h2>
+      <div class="stage-3d">
+        <canvas id="webgl-canvas"></canvas>
+      </div>
+
+      <p id="status-text" style="text-align: center; font-size: 0.9rem; margin-top: 1rem; color: var(--3d-light);">
+        Three.js 3D Engine initialized! 🥭
+      </p>
+    </div>
+
+  </div>
+
+  <script>
+    const canvas = document.getElementById('webgl-canvas');
+    const statusText = document.getElementById('status-text');
+
+    // THREE.JS SETUP
+    const scene = new THREE.Scene();
+    scene.background = new THREE.Color(0x11111a);
+
+    const camera = new THREE.PerspectiveCamera(50, canvas.clientWidth / canvas.clientHeight, 0.1, 1000);
+    camera.position.z = 5;
+
+    const renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true });
+    renderer.setSize(canvas.clientWidth, canvas.clientHeight);
+
+    // LIGHTS
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
+    scene.add(ambientLight);
+
+    const dirLight = new THREE.DirectionalLight(0x00C2B1, 1);
+    dirLight.position.set(5, 5, 5);
+    scene.add(dirLight);
+
+    // MESH DATA
+    let currentMesh = null;
+    let isRotating = true;
+    let isWireframe = false;
+
+    function createCube() {
+      if (currentMesh) scene.remove(currentMesh);
+      const geometry = new THREE.BoxGeometry(2, 2, 2);
+      const material = new THREE.MeshStandardMaterial({ 
+        color: 0x00C2B1, 
+        wireframe: isWireframe,
+        roughness: 0.3 
+      });
+      currentMesh = new THREE.Mesh(geometry, material);
+      scene.add(currentMesh);
+    }
+
+    createCube(); // Default initial mesh
+
+    // ANIMATION LOOP
+    function animate() {
+      requestAnimationFrame(animate);
+      if (currentMesh && isRotating) {
+        currentMesh.rotation.x += 0.01;
+        currentMesh.rotation.y += 0.01;
+      }
+      renderer.render(scene, camera);
+    }
+    animate();
+
+    // HANDLE RESIZE
+    window.addEventListener('resize', () => {
+      if (canvas.clientWidth && canvas.clientHeight) {
+        camera.aspect = canvas.clientWidth / canvas.clientHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(canvas.clientWidth, canvas.clientHeight);
+      }
+    });
+
+    // BLOCK ACTIONS
+    function spawnMesh(type) {
+      if (currentMesh) scene.remove(currentMesh);
+
+      if (type === 'cube') {
+        const geometry = new THREE.BoxGeometry(2, 2, 2);
+        const material = new THREE.MeshStandardMaterial({ color: 0x00C2B1, wireframe: isWireframe });
+        currentMesh = new THREE.Mesh(geometry, material);
+        statusText.innerText = 'Executed: spawned 3D Cube 🧊';
+      } else if (type === 'sphere') {
+        const geometry = new THREE.SphereGeometry(1.4, 32, 32);
+        const material = new THREE.MeshStandardMaterial({ color: 0x66E0D5, wireframe: isWireframe });
+        currentMesh = new THREE.Mesh(geometry, material);
+        statusText.innerText = 'Executed: spawned 3D Sphere 🔮';
+      }
+      scene.add(currentMesh);
+    }
+
+    function toggleRotation() {
+      isRotating = !isRotating;
+      statusText.innerText = `Executed: 3D auto-rotation ${isRotating ? 'ON ⚡' : 'OFF 🛑'}`;
+    }
+
+    function toggleWireframe() {
+      isWireframe = !isWireframe;
+      if (currentMesh) {
+        currentMesh.material.wireframe = isWireframe;
+      }
+      statusText.innerText = `Executed: set wireframe mode to ${isWireframe}`;
+    }
+
+    function zoomCamera(delta) {
+      camera.position.z = Math.max(2, Math.min(10, camera.position.z + delta));
+      statusText.innerText = `Executed: camera distance set to ${camera.position.z.toFixed(1)}`;
+    }
+
+    function reset3DStage() {
+      isRotating = true;
+      isWireframe = false;
+      camera.position.z = 5;
+      spawnMesh('cube');
+      statusText.innerText = 'Reset 3D world to defaults!';
+    }
+  </script>
+</body>
+</html>
